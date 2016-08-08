@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/sunshine_blue</item>
         <item name="colorPrimaryDark">@color/sunshine_dark_blue</item>
@@ -9,21 +9,26 @@
     </style>
 
     <style name="ForecastTheme" parent="AppTheme">
-        <item name="actionBarStyle">@style/ActionBar.Solid.WeatherApp.NoTitle</item>
+        <!--<item name="actionBarStyle">@style/ActionBar.Solid.WeatherApp.NoTitle</item>-->
         <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="logo">@drawable/ic_logo</item>
+    </style>
+
+    <!-- main activity action bar styles -->
+    <style name="ActionBar.Solid.WeatherApp.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+
     </style>
 
     <style name="DetailTheme" parent="AppTheme">
         <item name="actionBarStyle">@style/ActionBar.Solid.WeatherApp.NoTitle</item>
-        <item name="navigationIcon">@android:drawable/ic_menu_camera</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back_white_24dp</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="ActionBar.Solid.WeatherApp.NoTitle" parent="Theme.AppCompat.NoActionBar">
-        <item name="displayOptions">useLogo|showHome</item>
-        <item name="logo">@drawable/ic_fog</item>
+    <!-- Settings activity theme. -->
+    <style name="SettingsTheme" parent="AppTheme">
     </style>
 
     <style name="ForecastListStyle">
