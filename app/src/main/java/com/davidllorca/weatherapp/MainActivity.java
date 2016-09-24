@@ -9,10 +9,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.davidllorca.weatherapp.sync.WeatherAppSyncAdapter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private String mLocation;
     private boolean mTwoPane;
@@ -21,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Setting Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -46,6 +52,15 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
         ForecastFragment forecastFragment = ((ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast));
         forecastFragment.setUseTodayLayout(!mTwoPane);
+
+        WeatherAppSyncAdapter.initializeSyncAdapter(this);
+
+        //TODO
+//        if (!checkPlayServices()) {
+//            // This is where we could either prompt a user that they should install
+//            // the latest version of Google Play Services, or add an error snackbar
+//            // that some features won't be available.
+//        }
     }
 
     @Override
@@ -67,32 +82,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-
-        if (id == R.id.action_map_location) {
-            openPreferredLocationInMap();
-            return true;
-        }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void openPreferredLocationInMap() {
-        String location = Utility.getPreferredLocation(this);
-
-        // Using the URI scheme for showing a location found on a map.  This super-handy
-        // intent can is detailed in the "Common Intents" page of Android's developer site:
-        // http://developer.android.com/guide/components/intents-common.html#Maps
-        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
-                .appendQueryParameter("q", location)
-                .build();
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + location + ", no receiving apps installed!");
-        }
     }
 
     @Override
@@ -136,5 +126,26 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                     .setData(contentUri);
             startActivity(intent);
         }
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }

@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
  * from a {@link android.database.Cursor} to a {@link android.widget.ListView}.
@@ -44,9 +46,9 @@ public class ForecastAdapter extends CursorAdapter {
         int viewType = getItemViewType(cursor.getPosition());
         int layoutId = -1;
 
-        if(viewType == VIEW_TYPE_TODAY){
+        if (viewType == VIEW_TYPE_TODAY) {
             layoutId = R.layout.list_item_forecast_today;
-        } else if(viewType == VIEW_TYPE_FUTURE_DAY){
+        } else if (viewType == VIEW_TYPE_FUTURE_DAY) {
             layoutId = R.layout.list_item_forecast;
         }
 
@@ -65,39 +67,46 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         int viewType = getItemViewType(cursor.getPosition());
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        int fallbackIconId;
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
                 // Get weather icon
-                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
-                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+                fallbackIconId = Utility.getArtResourceForWeatherCondition(
+                        weatherId);
                 break;
             }
-            case VIEW_TYPE_FUTURE_DAY: {
-                // Get weather icon
-                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
-                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
-                break;
-            }
+            default:
+                fallbackIconId = Utility.getArtResourceForWeatherCondition(
+                        weatherId);
+
         }
 
+        Glide.with(mContext)
+                                .load(Utility.getArtUrlForWeatherCondition(mContext, weatherId))
+                                .error(fallbackIconId)
+                                .crossFade()
+                                .into(viewHolder.iconView);
         // Read date from cursor
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
 
-        // Read weather forecast from cursor
-        String description = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
+        // Get description from weather condition ID
+        String description = Utility.getStringForWeatherCondition(context, weatherId);
         viewHolder.descriptionView.setText(description);
-
-        // Read user preference for metric or imperial temperature units
-        boolean isMetric = Utility.isMetric(context);
+        viewHolder.descriptionView.setContentDescription(context.getString(R.string.a11y_forecast, description));
 
         // Read high temperature from cursor
-        double high = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-        viewHolder.highTempView.setText(Utility.formatTemperature(mContext,high, isMetric));
+        String high = Utility.formatTemperature(
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP));
+        viewHolder.highTempView.setText(high);
+        viewHolder.highTempView.setContentDescription(context.getString(R.string.a11y_high_temp, high));
 
         // Read low temperature from cursor
-        double low = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-        viewHolder.lowTempView.setText(Utility.formatTemperature(mContext, low, isMetric));
+        String low = Utility.formatTemperature(
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP));
+        viewHolder.lowTempView.setText(low);
+        viewHolder.lowTempView.setContentDescription(context.getString(R.string.a11y_low_temp, low));
     }
 
     public void setUseTodayLayout(boolean useTodayLayout) {

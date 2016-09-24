@@ -1,27 +1,34 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/sunshine_blue</item>
-        <item name="colorPrimaryDark">@color/sunshine_dark_blue</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="toolbarStyle">@style/Toolbar</item>
     </style>
 
-    <style name="ForecastTheme" parent="AppTheme">
-        <!--<item name="actionBarStyle">@style/ActionBar.Solid.WeatherApp.NoTitle</item>-->
+    <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="popupTheme">@style/Theme.AppCompat.Light</item>
+    </style>
+
+
+    <!--<style name="ForecastTheme" parent="AppTheme">
+        &lt;!&ndash;<item name="actionBarStyle">@style/ActionBar.Solid.WeatherApp.NoTitle</item>&ndash;&gt;
         <item name="windowActionBar">false</item>
         <item name="displayOptions">useLogo|showHome</item>
         <item name="logo">@drawable/ic_logo</item>
-    </style>
+    </style>-->
 
     <!-- main activity action bar styles -->
-    <style name="ActionBar.Solid.WeatherApp.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <!--<style name="ActionBar.Solid.WeatherApp.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">-->
 
-    </style>
+    <!--</style>-->
 
     <style name="DetailTheme" parent="AppTheme">
-        <item name="actionBarStyle">@style/ActionBar.Solid.WeatherApp.NoTitle</item>
+        <!--<item name="actionBarStyle">@style/ActionBar.Solid.WeatherApp.NoTitle</item>-->
         <item name="navigationIcon">@drawable/ic_arrow_back_white_24dp</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

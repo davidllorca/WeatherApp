@@ -3,17 +3,29 @@
     package="com.davidllorca.weatherapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Permissions required by the sync adapter -->
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+    <permission
+        android:name="com.davidllorca.LICENSE_TO_ACCES_DATABASE"
+        android:label="Access datatabase"
+        android:protectionLevel="dangerous"></permission>
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
         android:label="@string/app_name"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/ForecastTheme">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,17 +50,62 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.davidllorca.weatherapp.MainActivity" />
         </activity>
+
+        <!--<provider-->
+            <!--android:name=".data.WeatherProvider"-->
+            <!--android:authorities="com.davidllorca.weatherapp"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true"-->
+            <!--android:permission="com.davidllorca.LICENSE_TO_ACCESS_DATABASE" /> &lt;!&ndash; Accessible to all apps &ndash;&gt;-->
+
         <provider
-            android:authorities="com.davidllorca.weatherapp"
+            android:authorities="@string/content_authority"
             android:name=".data.WeatherProvider"
-            android:enabled="true"
+            android:exported="false"
+            android:syncable="true" />
+
+        <!-- SyncAdapter's dummy authentication service -->
+        <service
+            android:name=".sync.WeatherAppAuthenticatorService"
+            >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <!-- The SyncAdapter service -->
+        <service
+            android:name=".sync.WeatherAppSyncService"
             android:exported="true"
-            android:permission="com.davidllorca.LICENSE_TO_ACCESS_DATABASE"/><!-- Accessible to all apps-->
+            >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <!-- [START firebase_service] -->
+        <service
+            android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <!-- [END firebase_service] -->
+        <!-- [START firebase_iid_service] -->
+        <service
+            android:name=".MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <!-- [END firebase_iid_service] -->
 
     </application>
-    <permission android:name="com.davidllorca.LICENSE_TO_ACCES_DATABASE"
-        android:protectionLevel="dangerous"
-        android:label="Access datatabase">
 
-    </permission>
 </manifest>
